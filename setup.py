@@ -19,5 +19,5 @@ setup(
         "leads_jarvis": ["weights/*"]
     },
     include_package_data=True,
-    install_requires=["numpy", "torch", "leads"]
+    install_requires=["leads", "torch"]
 )

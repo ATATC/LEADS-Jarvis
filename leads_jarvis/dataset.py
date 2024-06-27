@@ -29,7 +29,7 @@ class BatchDataset(_CSVDataset):
         batch = []
         for i in super().__iter__():
             if len(batch) >= self._chunk_size:
-                yield (_DynamicProcessor(batch).to_tensor(self._channels),
+                yield (_tensor(_DynamicProcessor(batch).to_tensor(self._channels)),
                        _tensor((i["throttle"] - i["brake"], _delta_theta(batch[-2], batch[-1], i))))
                 batch.clear()
             batch.append(i)
@@ -71,6 +71,6 @@ class OnlineDataset(BatchDataset, _Callback):
                 _sleep(.05)
                 b = self._batch.copy()
             b = b[:self._chunk_size + 1]
-            yield (_DynamicProcessor(b).to_tensor(self._channels),
+            yield (_tensor(_DynamicProcessor(b).to_tensor(self._channels)),
                    _tensor((b[-1]["throttle"] - b[-1]["brake"], _delta_theta(*b[-3:]))))
             self._batch.clear()

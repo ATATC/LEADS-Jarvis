@@ -28,7 +28,7 @@ class PositionalEncoding(_Module):
 
 class FridayNetwork(_Module):
     def __init__(self, input_dim: int, num_dim: int, num_head: int, num_encoder_layers: int, dim_feedforward: int,
-                 dropout_rate: float, output_dim: int) -> None:
+                 dropout_rate: float, output_dim: int = 3) -> None:
         super().__init__()
         self.embedding: _Module = _Linear(input_dim, num_dim)
         self.positional_encoding: _Module = PositionalEncoding(num_dim, dropout_rate)
@@ -42,7 +42,7 @@ class FridayNetwork(_Module):
         x = self.transformer_encoder(x)
         x = _mean(x, dim=1)
         x = self.fc_out(x)
-        return x
+        return x[-1]
 
 
 class Friday(_JarvisBackend):
@@ -50,6 +50,6 @@ class Friday(_JarvisBackend):
         self._network: _Module = network
 
     @_override
-    def predict(self, x: _array) -> tuple[float, float]:
+    def predict(self, x: _array) -> tuple[float, float, float]:
         self._network(x)
-        return 0, 0
+        return 0, 0, 0

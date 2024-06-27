@@ -31,6 +31,8 @@ class Trainer(object):
             data = data.to(self._device)
             target = target.to(self._device)
             output = self._network(data)
+            _L.debug(f"Network output: {output}")
+            _L.debug(f"Target: {target}")
             loss = self._criterion(output, target)
             self._optimizer.zero_grad()
             loss.backward()

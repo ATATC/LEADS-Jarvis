@@ -36,7 +36,7 @@ class FridayNetwork(_Module):
             _TransformerEncoderLayer(num_dim, num_head, dim_feedforward, dropout_rate), num_encoder_layers)
         self.fc_out: _Module = _Linear(num_dim, output_dim)
 
-    def forward(self, x):
+    def forward(self, x: _Tensor) -> _Tensor:
         x = self.embedding(x)
         x = self.positional_encoding(x)
         x = self.transformer_encoder(x)

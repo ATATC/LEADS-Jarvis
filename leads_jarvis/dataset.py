@@ -8,7 +8,7 @@ from leads.comm import Client as _Client, create_client as _create_client, Callb
 from leads.data_persistence import CSVDataset as _CSVDataset
 from leads.data_persistence.analyzer import DynamicProcessor as _DynamicProcessor
 from numpy import arctan as _arctan
-from torch import Tensor as _Tensor, tensor as _tensor
+from torch import Tensor as _Tensor, tensor as _tensor, float as _float
 
 
 def _delta_theta(a: dict[str, _Any], b: dict[str, _Any], c: dict[str, _Any]) -> float:
@@ -29,8 +29,8 @@ class BatchDataset(_CSVDataset):
         batch = []
         for i in super().__iter__():
             if len(batch) >= self._chunk_size:
-                yield (_tensor(_DynamicProcessor(batch).to_tensor(self._channels)),
-                       _tensor((i["throttle"] - i["brake"], _delta_theta(batch[-2], batch[-1], i))))
+                yield (_tensor(_DynamicProcessor(batch).to_tensor(self._channels), dtype=_float),
+                       _tensor((i["throttle"] - i["brake"], _delta_theta(*batch[-2:], i)), dtype=_float))
                 batch.clear()
             batch.append(i)
 
@@ -70,7 +70,8 @@ class OnlineDataset(BatchDataset, _Callback):
             while len(b) <= self._chunk_size:
                 _sleep(.05)
                 b = self._batch.copy()
-            b = b[:self._chunk_size + 1]
-            yield (_tensor(_DynamicProcessor(b).to_tensor(self._channels)),
-                   _tensor((b[-1]["throttle"] - b[-1]["brake"], _delta_theta(*b[-3:]))))
+            n = b[self._chunk_size]
+            b = b[:self._chunk_size]
+            yield (_tensor(_DynamicProcessor(b).to_tensor(self._channels), dtype=_float),
+                   _tensor((n["throttle"] - n["brake"], _delta_theta(*b[-2:], n)), dtype=_float))
             self._batch.clear()

@@ -1,11 +1,12 @@
 from typing import override as _override
 
-from leads.data_persistence.analyzer import JarvisBackend as _JarvisBackend
-from numpy import array as _array
+from numpy import ndarray as _ndarray
 from torch import Tensor as _Tensor, zeros as _zeros, arange as _arange, exp as _exp, log as _log, tensor as _tensor, \
     sin as _sin, cos as _cos, mean as _mean
 from torch.nn import Module as _Module, Dropout as _Dropout, Linear as _Linear, \
     TransformerEncoderLayer as _TransformerEncoderLayer, TransformerEncoder as _TransformerEncoder
+
+from leads.data_persistence.analyzer import JarvisBackend as _JarvisBackend
 
 
 class PositionalEncoding(_Module):
@@ -50,6 +51,6 @@ class Friday(_JarvisBackend):
         self._network: _Module = network
 
     @_override
-    def predict(self, x: _array) -> tuple[float, float, float]:
+    def predict(self, x: _ndarray) -> tuple[float, float, float]:
         self._network(x)
         return 0, 0, 0

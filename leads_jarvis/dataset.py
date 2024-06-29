@@ -9,7 +9,8 @@ from leads.data_persistence import CSVDataset as _CSVDataset
 from leads.data_persistence.analyzer import DynamicProcessor as _DynamicProcessor
 from numpy import arctan as _arctan
 from torch import Tensor as _Tensor, tensor as _tensor, float as _float, stack as _stack
-from torchvision.transforms.functional import pad as _pad, resize as _resize, normalize as _normalize
+from torch.nn.functional import pad as _pad
+from torchvision.transforms.functional import resize as _resize
 
 
 def _delta_theta(a: dict[str, _Any], b: dict[str, _Any], c: dict[str, _Any]) -> float:
@@ -20,22 +21,21 @@ def _delta_theta(a: dict[str, _Any], b: dict[str, _Any], c: dict[str, _Any]) -> 
     return _arctan(theta_j) - _arctan(theta_i)
 
 
-def calculate_padding(height: int, width: int) -> tuple[int, int, int, int]:
-    padding_top = (max(height, width) - height) // 2
-    padding_bottom = max(height, width) - height - padding_top
-    padding_left = (max(height, width) - width) // 2
-    padding_right = max(height, width) - width - padding_left
-    return padding_left, padding_right, padding_top, padding_bottom
+def calculate_padding(width: int, height: int) -> tuple[int, int, int, int]:
+    target = max(width, height)
+    left = (target - width) // 2
+    right = target - width - left
+    top = (target - height) // 2
+    bottom = target - height - top
+    return left, right, top, bottom
 
 
 def transform_batch(x: _Tensor, img_size: int = 224) -> _Tensor:
     transformed_tensors = []
     for img in x:
-        padding_left, padding_right, padding_top, padding_bottom = calculate_padding(img.shape[1], img.shape[2])
-        img_padded = _pad(img, [padding_left, padding_right, padding_top, padding_bottom])
+        img_padded = _pad(img, list(calculate_padding(img.shape[-1], img.shape[-2])))
         img_resized = _resize(img_padded, [img_size, img_size])
-        img_normalized = _normalize(img_resized, mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
-        transformed_tensors.append(img_normalized)
+        transformed_tensors.append(img_resized)
     return _stack(transformed_tensors)
 
 

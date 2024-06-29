@@ -8,7 +8,8 @@ from leads.comm import Client as _Client, create_client as _create_client, Callb
 from leads.data_persistence import CSVDataset as _CSVDataset
 from leads.data_persistence.analyzer import DynamicProcessor as _DynamicProcessor
 from numpy import arctan as _arctan
-from torch import Tensor as _Tensor, tensor as _tensor, float as _float
+from torch import Tensor as _Tensor, tensor as _tensor, float as _float, stack as _stack
+from torchvision.transforms.functional import pad as _pad, resize as _resize, normalize as _normalize
 
 
 def _delta_theta(a: dict[str, _Any], b: dict[str, _Any], c: dict[str, _Any]) -> float:
@@ -17,6 +18,25 @@ def _delta_theta(a: dict[str, _Any], b: dict[str, _Any], c: dict[str, _Any]) -> 
     theta_i = _dlon2meters(lon_b - lon_a, lat_a) / _dlat2meters(lat_b - lat_a)
     theta_j = _dlon2meters(lon_c - lon_b, lat_b) / _dlat2meters(lat_c - lat_b)
     return _arctan(theta_j) - _arctan(theta_i)
+
+
+def calculate_padding(height: int, width: int) -> tuple[int, int, int, int]:
+    padding_top = (max(height, width) - height) // 2
+    padding_bottom = max(height, width) - height - padding_top
+    padding_left = (max(height, width) - width) // 2
+    padding_right = max(height, width) - width - padding_left
+    return padding_left, padding_right, padding_top, padding_bottom
+
+
+def transform_batch(x: _Tensor, img_size: int = 224) -> _Tensor:
+    transformed_tensors = []
+    for img in x:
+        padding_left, padding_right, padding_top, padding_bottom = calculate_padding(img.shape[1], img.shape[2])
+        img_padded = _pad(img, [padding_left, padding_right, padding_top, padding_bottom])
+        img_resized = _resize(img_padded, [img_size, img_size])
+        img_normalized = _normalize(img_resized, mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        transformed_tensors.append(img_normalized)
+    return _stack(transformed_tensors)
 
 
 class BatchDataset(_CSVDataset):

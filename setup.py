@@ -19,5 +19,5 @@ setup(
         "leads_jarvis": ["weights/*"]
     },
     include_package_data=True,
-    install_requires=["leads", "torch", "timm"]
+    install_requires=["leads>=0.9.1-alpha.3", "torch", "torchvision", "timm"]
 )

@@ -33,9 +33,9 @@ def calculate_padding(width: int, height: int) -> tuple[int, int, int, int]:
 def transform_batch(x: _Tensor, img_size: int = 224) -> _Tensor:
     transformed_tensors = []
     for img in x:
-        img_padded = _pad(img, list(calculate_padding(img.shape[-1], img.shape[-2])))
-        img_resized = _resize(img_padded, [img_size, img_size])
-        transformed_tensors.append(img_resized)
+        img = _pad(img, list(calculate_padding(img.shape[-1], img.shape[-2])))
+        img = _resize(img, [img_size, img_size])
+        transformed_tensors.append(img)
     return _stack(transformed_tensors)
 
 

@@ -4,7 +4,7 @@ from typing import Any as _Any
 from cv2 import rectangle as _rectangle, putText as _put_text, FONT_HERSHEY_COMPLEX_SMALL as _FONT
 from numpy import ndarray as _ndarray
 
-from leads_jarvis.utils import to_opencv
+from leads_jarvis.utils import to_opencv, from_opencv
 
 
 class Detection(object, metaclass=_ABCMeta):
@@ -28,4 +28,4 @@ class Detection(object, metaclass=_ABCMeta):
             x1, y1, x2, y2 = round(box["x1"]), round(box["y1"]), round(box["x2"]), round(box["y2"])
             image = _rectangle(image, (x1, y1), (x2, y2), (255, 255, 255))
             image = _put_text(image, name, (x1, y1 - 4), _FONT, 1, (255, 255, 255))
-        return image
+        return from_opencv(image)

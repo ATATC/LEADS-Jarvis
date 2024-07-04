@@ -5,7 +5,7 @@ with open("README.md") as f:
 
 setup(
     name="leads-jarvis",
-    version="0.0.1",
+    version="0.0.1-alpha.0",
     python_requires=">=3.12",
     author="ProjectNeura",
     author_email="central@projectneura.org",
@@ -16,8 +16,9 @@ setup(
     url="https://github.com/ProjectNeura/LEADS-Jarvis",
     packages=find_packages(),
     package_data={
-        "leads_jarvis": ["weights/*"]
+        "leads_jarvis": ["checkpoints/*"]
     },
     include_package_data=True,
-    install_requires=["leads>=0.9.1-alpha.3", "torch", "torchvision", "timm"]
+    install_requires=["leads>=0.9.1", "torch", "torchvision", "timm", "segment-anything", "requests", "rich",
+                      "ultralytics"]
 )

@@ -4,7 +4,7 @@ from numpy import ndarray as _ndarray
 from ultralytics import YOLO as _YOLO
 
 from leads_jarvis.network.detection.prototype import Detection
-from leads_jarvis.utils import _CHECKPOINTS_PATH
+from leads_jarvis.utils import _CHECKPOINTS_PATH, to_opencv
 
 
 class PretrainedYOLOWrapper(Detection):
@@ -13,7 +13,7 @@ class PretrainedYOLOWrapper(Detection):
 
     @_override
     def detect(self, image: _ndarray) -> list[dict[str, _Any]]:
-        return self._yolo(image.transpose(1, 2, 0))[0].summary()
+        return self._yolo(to_opencv(image))[0].summary()
 
 
 class PretrainedYOLO(Detection):

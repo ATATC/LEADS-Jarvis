@@ -5,7 +5,7 @@ from segment_anything import sam_model_registry as _sam_model_registry, \
     SamAutomaticMaskGenerator as _SamAutomaticMaskGenerator
 
 from leads_jarvis.network.segmentation.prototype import Segmentation
-from leads_jarvis.utils import download_checkpoint
+from leads_jarvis.utils import download_checkpoint, to_opencv
 
 
 class PretrainedSAMWrapper(Segmentation):
@@ -15,7 +15,7 @@ class PretrainedSAMWrapper(Segmentation):
 
     @_override
     def segment(self, image: _ndarray) -> list[dict[str, _Any]]:
-        return self._mask_generator.generate(image.transpose(1, 2, 0))
+        return self._mask_generator.generate(to_opencv(image))
 
 
 class PretrainedSAM(Segmentation):

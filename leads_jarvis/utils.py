@@ -1,10 +1,19 @@
 from os.path import abspath as _abspath, exists as _exists
 
 from leads import L as _L
+from numpy import ndarray as _ndarray
 from requests import head as _head, get as _get
 from rich.progress import Progress as _Progress
 
 _CHECKPOINTS_PATH: str = f"{_abspath(__file__)[:-8]}checkpoints"
+
+
+def from_opencv(image: _ndarray) -> _ndarray:
+    return image.transpose(2, 0, 1)
+
+
+def to_opencv(image: _ndarray) -> _ndarray:
+    return image.transpose(1, 2, 0)
 
 
 def download_checkpoint(url: str, to: str, overwrite: bool = False) -> str:

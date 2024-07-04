@@ -4,11 +4,11 @@ from leads import L as _L
 from requests import head as _head, get as _get
 from rich.progress import Progress as _Progress
 
-_WEIGHTS_PATH: str = f"{_abspath(__file__)[:-8]}checkpoints"
+_CHECKPOINTS_PATH: str = f"{_abspath(__file__)[:-8]}checkpoints"
 
 
 def download_checkpoint(url: str, to: str, overwrite: bool = False) -> str:
-    if _exists(to := f"{_WEIGHTS_PATH}/{to}") and not overwrite:
+    if _exists(to := f"{_CHECKPOINTS_PATH}/{to}") and not overwrite:
         return to
     _L.info(f"Downloading checkpoint {url}...")
     response = _head(url)

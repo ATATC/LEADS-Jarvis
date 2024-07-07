@@ -16,13 +16,13 @@ class Detection(object, metaclass=_ABCMeta):
         return self.detect(image)
 
     def mark(self, image: _ndarray, data: list[dict[str, _Any]] | None = None,
-             filter_type: tuple[str, ...] | None = None) -> _ndarray:
+             accepted_classes: tuple[str, ...] | None = None) -> _ndarray:
         if data is None:
             data = self(image)
         image = to_opencv(image)
         for item in data:
             name = item["name"]
-            if filter_type is not None and name not in filter_type:
+            if accepted_classes is not None and name not in accepted_classes:
                 continue
             box = item["box"]
             x1, y1, x2, y2 = round(box["x1"]), round(box["y1"]), round(box["x2"]), round(box["y2"])

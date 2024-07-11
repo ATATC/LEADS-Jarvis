@@ -4,4 +4,3 @@ main.py
 build
 *.egg-info
 dist
-data

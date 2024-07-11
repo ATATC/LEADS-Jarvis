@@ -27,7 +27,6 @@ def download_checkpoint(url: str, to: str, overwrite: bool = False) -> str:
         raise RuntimeError(f"Failed to download checkpoint: {response.status_code}")
     with _Progress() as progress:
         task = progress.add_task("[white]Downloading checkpoint...", total=file_size)
-        progress.update(task)
         with open(to, "wb") as file:
             for chunk in response.iter_content(chunk_size=8192):
                 file.write(chunk)

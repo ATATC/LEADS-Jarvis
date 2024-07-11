@@ -1,5 +1,6 @@
 from os.path import exists
 
+from rich.progress import Progress as _Progress
 from torch import device, save, load
 from torch.cuda import is_available
 from torch.nn import CrossEntropyLoss
@@ -23,24 +24,20 @@ if __name__ == '__main__':
         model.load_state_dict(load("leads_jarvis/checkpoints/rrs.pth"))
     criterion = CrossEntropyLoss()
     optimizer = Adam(model.parameters(), lr=1e-3)
-
-    num_epochs = 128
-    for epoch in range(num_epochs):
-        model.train()
-        epoch_loss = 0
-
-        for images, masks in loader:
-            images = images.to(device)
-            masks = masks.to(device)
-
-            outputs = model(images)
-            loss = criterion(outputs, masks)
-
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-            epoch_loss += loss.item()
-
-        print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {epoch_loss / len(loader)}")
-        save(model.state_dict(), "leads_jarvis/checkpoints/rrs.pth")
+    num_epochs = 1024
+    with _Progress(refresh_per_second=True) as progress:
+        task = progress.add_task("[white]Training...", total=num_epochs)
+        for epoch in range(num_epochs):
+            model.train()
+            epoch_loss = 0
+            for images, masks in loader:
+                images = images.to(device)
+                masks = masks.to(device)
+                outputs = model(images)
+                loss = criterion(outputs, masks)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                epoch_loss += loss.item()
+            save(model.state_dict(), "leads_jarvis/checkpoints/rrs.pth")
+            progress.update(task, advance=1, description=f"[white]Training loss: {epoch_loss / len(loader):.3f}")

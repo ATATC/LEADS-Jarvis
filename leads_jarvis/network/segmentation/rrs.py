@@ -70,4 +70,4 @@ class RRSNetwork(_Module):
         x = self.down1(x)
         x = self.down2(x)
         x = self.conv(x)
-        return _interpolate(x, scale_factor=8, mode='bilinear', align_corners=True)
+        return _interpolate(x, scale_factor=8, mode="bilinear", align_corners=True)

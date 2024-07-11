@@ -1,4 +1,6 @@
-from torch import device, save
+from os.path import exists
+
+from torch import device, save, load
 from torch.cuda import is_available
 from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
@@ -17,6 +19,8 @@ if __name__ == '__main__':
     loader = DataLoader(TrainingDataset("data/images", "data/masks", transform), batch_size=16, shuffle=True)
     device = device("cuda" if is_available() else "cpu")
     model = RRSNetwork().to(device)
+    if exists("leads_jarvis/checkpoints/rrs.pth"):
+        model.load_state_dict(load("leads_jarvis/checkpoints/rrs.pth"))
     criterion = CrossEntropyLoss()
     optimizer = Adam(model.parameters(), lr=1e-3)
 

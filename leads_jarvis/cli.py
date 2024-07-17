@@ -82,8 +82,8 @@ def main() -> int:
     uim["left_ai"] = Photo(w.root(), variable=left_ai).lock_ratio(cfg.m_ratio)
     uim["right_ai"] = Photo(w.root(), variable=right_ai).lock_ratio(cfg.m_ratio)
     uim["rear_ai"] = Photo(w.root(), variable=rear_ai).lock_ratio(cfg.m_ratio)
-    uim.layout([["front", "left", "right", "rear"],
-                ["front_ai", "left_ai", "right_ai", "rear_ai"]])
+    uim.layout([["left", "front", "rear", "right"],
+                ["left_ai", "front_ai", "rear_ai", "right_ai"]])
     yolo = PretrainedYOLO("yolov8s")
     _Thread(name="front_processor", target=make_processor(yolo, front, front_ai), daemon=True).start()
     _Thread(name="left_processor", target=make_processor(yolo, left, left_ai), daemon=True).start()

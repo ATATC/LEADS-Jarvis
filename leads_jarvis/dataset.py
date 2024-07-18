@@ -2,15 +2,16 @@ from json import loads as _loads, JSONDecodeError as _JSONDecodeError
 from time import sleep as _sleep
 from typing import override as _override, Generator as _Generator, Any as _Any
 
-from leads import dlat2meters as _dlat2meters, dlon2meters as _dlon2meters
-from leads.comm import Client as _Client, create_client as _create_client, Callback as _Callback, Service as _Service, \
-    start_client as _start_client
-from leads.data_persistence import CSVDataset as _CSVDataset
-from leads.data_persistence.analyzer import DynamicProcessor as _DynamicProcessor
 from numpy import arctan as _arctan
 from torch import Tensor as _Tensor, tensor as _tensor, float as _float, stack as _stack
 from torch.nn.functional import pad as _pad
 from torchvision.transforms.functional import resize as _resize
+
+from leads import dlat2meters as _dlat2meters, dlon2meters as _dlon2meters
+from leads.comm import Client as _Client, create_client as _create_client, Callback as _Callback, Service as _Service, \
+    start_client as _start_client
+from leads.data_persistence import CSVDataset as _CSVDataset
+from leads.data_persistence.analyzer import Preprocessor as _Preprocessor
 
 
 def _delta_theta(a: dict[str, _Any], b: dict[str, _Any], c: dict[str, _Any]) -> float:
@@ -49,7 +50,7 @@ class BatchDataset(_CSVDataset):
         batch = []
         for i in super().__iter__():
             if len(batch) >= self._chunk_size:
-                yield (_tensor(_DynamicProcessor(batch).to_tensor(self._channels), dtype=_float),
+                yield (_tensor(_Preprocessor(batch).to_tensor(self._channels), dtype=_float),
                        _tensor((i["throttle"], i["brake"], _delta_theta(*batch[-2:], i)), dtype=_float))
                 batch.clear()
             batch.append(i)
@@ -92,6 +93,6 @@ class OnlineDataset(BatchDataset, _Callback):
                 b = self._batch.copy()
             n = b[self._chunk_size]
             b = b[:self._chunk_size]
-            yield (_tensor(_DynamicProcessor(b).to_tensor(self._channels), dtype=_float),
+            yield (_tensor(_Preprocessor(b).to_tensor(self._channels), dtype=_float),
                    _tensor((n["throttle"], n["brake"], _delta_theta(*b[-2:], n)), dtype=_float))
             self._batch.clear()

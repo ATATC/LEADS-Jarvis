@@ -84,10 +84,6 @@ class OnlineDataset(BatchDataset, _Callback):
         self._client = _start_client(self._address, _create_client(self._port, self), True)
 
     @_override
-    def reverse(self) -> None:
-        raise NotImplementedError
-
-    @_override
     def __iter__(self) -> _Generator[tuple[_Tensor, _Tensor], None, None]:
         self.require_loaded()
         while True:

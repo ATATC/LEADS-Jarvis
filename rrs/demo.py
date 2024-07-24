@@ -1,14 +1,14 @@
 from random import randint
 from time import time
 
+from leads_jarvis import RRSNetwork
 from matplotlib.pyplot import imshow, axis, show
 from torch import device, cuda, load, no_grad, cat
 from torchvision.transforms import Compose, Resize, ToTensor
 
 from dataset import TrainingDataset
-from leads_jarvis import RRSNetwork
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     device = device("cuda" if cuda.is_available() else "cpu")
     model = RRSNetwork().to(device)
     model.load_state_dict(load("leads_jarvis/checkpoints/rrs.pth"))

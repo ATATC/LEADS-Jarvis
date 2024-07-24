@@ -1,5 +1,6 @@
 from os.path import exists
 
+from leads_jarvis import RRSNetwork
 from rich.progress import Progress as _Progress
 from torch import device, save, load
 from torch.cuda import is_available
@@ -9,9 +10,8 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import Compose, ToTensor, RandomHorizontalFlip, RandomRotation
 
 from dataset import TrainingDataset
-from leads_jarvis import RRSNetwork
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     transform = Compose((
         RandomHorizontalFlip(),
         RandomRotation(10),

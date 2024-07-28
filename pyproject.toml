@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "leads-jarvis"
-dynamic = ["version"]
+version = "0.0.1"
 description = "Jarvis Extension for LEADS"
 license = "Apache-2.0"
 readme = "README.md"

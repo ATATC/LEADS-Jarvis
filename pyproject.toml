@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "leads-jarvis"
+version = "0.0.1-alpha.2"
+description = "Jarvis Extension for LEADS"
+license = "Apache-2.0"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "Project Neura", email = "central@projectneura.org" }
+]
+dependencies = ["leads[standard]>=0.9.1", "torch", "torchvision", "timm", "segment-anything", "requests", "rich", "ultralytics"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["leads_jarvis"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["leads_jarvis"]
+
+[project.urls]
+Homepage = "https://leads.projectneura.org"
+Documentation = "https://leads-docs.projectneura.org"
+Repository = "https://github.com/ProjectNeura/LEADS-Jarvis"
+
+[project.gui-scripts]
+leads-jarvis = "leads_jarvis:__entry__"

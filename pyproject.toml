@@ -12,7 +12,7 @@ requires-python = ">=3.12"
 authors = [
     { name = "Project Neura", email = "central@projectneura.org" }
 ]
-dependencies = ["leads[standard]>=0.9.1", "torch", "torchvision", "timm", "segment-anything", "requests", "rich", "ultralytics"]
+dependencies = ["leads[standard]>=0.9.2", "torch", "torchvision", "timm", "segment-anything", "requests", "rich", "ultralytics"]
 
 [tool.hatch.build.targets.sdist]
 only-include = ["leads_jarvis"]

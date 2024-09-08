@@ -4,13 +4,21 @@ from time import sleep as _sleep
 from typing import override as _override, Callable as _Callable
 
 from PIL.Image import open as _open, fromarray as _fromarray
-from leads import require_config, FRONT_VIEW_CAMERA, LEFT_VIEW_CAMERA, RIGHT_VIEW_CAMERA, REAR_VIEW_CAMERA, L
+from leads import require_config, FRONT_VIEW_CAMERA, LEFT_VIEW_CAMERA, RIGHT_VIEW_CAMERA, REAR_VIEW_CAMERA, L, \
+    controller, MAIN_CONTROLLER, Controller, DataContainer
 from leads.comm import start_client, create_client, Callback, Service, ConnectionBase
 from leads_gui import Window, ContextManager, RuntimeData, Photo, ImageVariable
 from numpy import array as _array
 
 from leads_jarvis.network import Detection, PretrainedYOLO
 from leads_jarvis.utils import from_opencv, to_opencv
+
+
+@controller(MAIN_CONTROLLER)
+class MainController(Controller):
+    @_override
+    def read(self) -> DataContainer:
+        return DataContainer()
 
 
 class StreamCallback(Callback):

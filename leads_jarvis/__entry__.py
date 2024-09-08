@@ -2,9 +2,9 @@ from argparse import ArgumentParser as _ArgumentParser
 from sys import exit as _exit
 
 from leads import register_config as _register_config, load_config as _load_config
-from leads_gui import Config as _Config
 
 from leads_jarvis.cli import main
+from leads_jarvis.config import Config as _Config
 
 
 def __entry__() -> None:

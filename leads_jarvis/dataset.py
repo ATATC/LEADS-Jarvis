@@ -40,24 +40,26 @@ def transform_batch(x: _Tensor, img_size: int = 224) -> _Tensor:
 
 
 class BatchDataset(_CSVDataset):
-    def __init__(self, file: str, batch_size: int, channels: tuple[str, ...]) -> None:
+    def __init__(self, file: str, batch_size: int, channels: tuple[str, ...], device: str = "cpu") -> None:
         super().__init__(file, batch_size)
         self._channels: tuple[str, ...] = channels
+        self._device: str = device
 
     @_override
     def __iter__(self) -> _Generator[tuple[_Tensor, _Tensor], None, None]:
         batch = []
         for i in super().__iter__():
             if len(batch) >= self._chunk_size:
-                yield (_tensor(_Preprocessor(batch).to_tensor(self._channels), dtype=_float),
-                       _tensor((i["throttle"], i["brake"], _delta_theta(*batch[-2:], i)), dtype=_float))
+                yield (_tensor(_Preprocessor(batch).to_tensor(self._channels), _float, self._device),
+                       _tensor((i["throttle"], i["brake"], _delta_theta(*batch[-2:], i)), _float, self._device))
                 batch.clear()
             batch.append(i)
 
 
 class OnlineDataset(BatchDataset, _Callback):
-    def __init__(self, server_address: str, server_port: int, batch_size: int, channels: tuple[str, ...]) -> None:
-        BatchDataset.__init__(self, server_address, batch_size, channels)
+    def __init__(self, server_address: str, server_port: int, batch_size: int, channels: tuple[str, ...],
+                 device: str = "cpu") -> None:
+        BatchDataset.__init__(self, server_address, batch_size, channels, device)
         _Callback.__init__(self)
         self._address: str = server_address
         self._port: int = server_port
@@ -92,6 +94,6 @@ class OnlineDataset(BatchDataset, _Callback):
                 b = self._batch.copy()
             n = b[self._chunk_size]
             b = b[:self._chunk_size]
-            yield (_tensor(_Preprocessor(b).to_tensor(self._channels), dtype=_float),
-                   _tensor((n["throttle"], n["brake"], _delta_theta(*b[-2:], n)), dtype=_float))
+            yield (_tensor(_Preprocessor(b).to_tensor(self._channels), _float, self._device),
+                   _tensor((n["throttle"], n["brake"], _delta_theta(*b[-2:], n)), _float, self._device))
             self._batch.clear()

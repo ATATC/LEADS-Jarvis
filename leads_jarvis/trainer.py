@@ -1,22 +1,23 @@
-from typing import Literal as _Literal
-
 from leads import L as _L
 from torch import save as _save
 from torch.nn import Module as _Module
 from torch.optim import Optimizer as _Optimizer
 
 from leads_jarvis.dataset import BatchDataset
+from leads_jarvis.prototype import Prototype
+from leads_jarvis.types import Device as _Device
 
 
-class Trainer(object):
+class Trainer(Prototype):
     def __init__(self, dataset: BatchDataset, network: _Module, criterion: _Module, optimizer: _Optimizer,
-                 weights_file: str, device: _Literal["cpu", "cuda"] = "cpu") -> None:
+                 weights_file: str, device: _Device = "cpu") -> None:
+        super().__init__(device)
         self._dataset: BatchDataset = dataset
         self._network: _Module = network
         self._criterion: _Module = criterion
         self._optimizer: _Optimizer = optimizer
         self._weights_file: str = weights_file
-        self._device: _Literal["cpu", "cuda"] = device
+        self._device: _Device = device
 
     def initialize(self) -> None:
         self._dataset.load()

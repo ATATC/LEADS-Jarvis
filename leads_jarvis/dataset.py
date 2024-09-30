@@ -12,6 +12,9 @@ from torch import Tensor as _Tensor, tensor as _tensor, float as _float, stack a
 from torch.nn.functional import pad as _pad
 from torchvision.transforms.functional import resize as _resize
 
+from leads_jarvis.prototype import Prototype
+from leads_jarvis.types import Device as _Device
+
 
 def _delta_theta(a: dict[str, _Any], b: dict[str, _Any], c: dict[str, _Any]) -> float:
     lat_a, lon_a, lat_b, lon_b, lat_c, lon_c = (a["latitude"], a["longitude"], b["latitude"], b["longitude"],
@@ -39,26 +42,27 @@ def transform_batch(x: _Tensor, img_size: int = 224) -> _Tensor:
     return _stack(transformed_tensors)
 
 
-class BatchDataset(_CSVDataset):
-    def __init__(self, file: str, batch_size: int, channels: tuple[str, ...], device: str = "cpu") -> None:
-        super().__init__(file, batch_size)
+class BatchDataset(_CSVDataset, Prototype):
+    def __init__(self, file: str, batch_size: int, channels: tuple[str, ...], device: _Device = "cpu") -> None:
+        _CSVDataset.__init__(self, file, batch_size)
+        Prototype.__init__(self, device)
         self._channels: tuple[str, ...] = channels
-        self._device: str = device
 
     @_override
     def __iter__(self) -> _Generator[tuple[_Tensor, _Tensor], None, None]:
         batch = []
         for i in super().__iter__():
             if len(batch) >= self._chunk_size:
-                yield (_tensor(_Preprocessor(batch).to_tensor(self._channels), _float, self._device),
-                       _tensor((i["throttle"], i["brake"], _delta_theta(*batch[-2:], i)), _float, self._device))
+                yield (_tensor(_Preprocessor(batch).to_tensor(self._channels), dtype=_float, device=self._device),
+                       _tensor((i["throttle"], i["brake"], _delta_theta(*batch[-2:], i)), dtype=_float,
+                               device=self._device))
                 batch.clear()
             batch.append(i)
 
 
 class OnlineDataset(BatchDataset, _Callback):
     def __init__(self, server_address: str, server_port: int, batch_size: int, channels: tuple[str, ...],
-                 device: str = "cpu") -> None:
+                 device: _Device = "cpu") -> None:
         BatchDataset.__init__(self, server_address, batch_size, channels, device)
         _Callback.__init__(self)
         self._address: str = server_address
@@ -94,6 +98,6 @@ class OnlineDataset(BatchDataset, _Callback):
                 b = self._batch.copy()
             n = b[self._chunk_size]
             b = b[:self._chunk_size]
-            yield (_tensor(_Preprocessor(b).to_tensor(self._channels), _float, self._device),
-                   _tensor((n["throttle"], n["brake"], _delta_theta(*b[-2:], n)), _float, self._device))
+            yield (_tensor(_Preprocessor(b).to_tensor(self._channels), dtype=_float, device=self._device),
+                   _tensor((n["throttle"], n["brake"], _delta_theta(*b[-2:], n)), dtype=_float, device=self._device))
             self._batch.clear()

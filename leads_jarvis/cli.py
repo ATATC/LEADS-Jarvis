@@ -7,7 +7,7 @@ from PIL.Image import open as _open, fromarray as _fromarray
 from leads import require_config, FRONT_VIEW_CAMERA, LEFT_VIEW_CAMERA, RIGHT_VIEW_CAMERA, REAR_VIEW_CAMERA, L, \
     controller, MAIN_CONTROLLER, Controller, DataContainer
 from leads.comm import start_client, create_client, Callback, Service, ConnectionBase
-from leads_gui import Window, ContextManager, RuntimeData, Photo, ImageVariable
+from leads_gui import Pot, ContextManager, RuntimeData, Photo, ImageVariable
 from numpy import array as _array
 
 from leads_jarvis.network import Detection, PretrainedYOLO
@@ -71,7 +71,7 @@ def make_processor(detection_model: Detection, target_variable: ImageVariable,
 
 def main() -> int:
     cfg = require_config()
-    w = Window(cfg.width, cfg.height, cfg.refresh_rate, RuntimeData(), title="LEADS Jarvis", fullscreen=cfg.fullscreen,
+    w = Pot(cfg.width, cfg.height, cfg.refresh_rate, RuntimeData(), title="LEADS Jarvis", fullscreen=cfg.fullscreen,
                no_title_bar=cfg.no_title_bar, theme_mode=cfg.theme_mode)
     front = ImageVariable(w.root(), None)
     left = ImageVariable(w.root(), None)
